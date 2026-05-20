@@ -17,52 +17,31 @@ public class ResumeSender {
 
     static void main(String[] args) throws Exception {
 
-        // =========================
-        // LOAD CONFIG
-        // =========================
+        // Load config
 
         Properties config = new Properties();
 
-        config.load(
-                new FileInputStream("config.properties")
-        );
+        config.load(new FileInputStream("config.properties"));
 
-        String email =
-                config.getProperty("email");
+        String email = config.getProperty("email");
 
-        String password =
-                config.getProperty("password");
+        String password = config.getProperty("password");
 
-        String subjectRu =
-                config.getProperty("subject.ru");
+        String subjectRu = config.getProperty("subject.ru");
 
-        String subjectEn =
-                config.getProperty("subject.en");
+        String subjectEn = config.getProperty("subject.en");
 
-        // =========================
-        // LOAD EMAIL BODIES
-        // =========================
+        // Load email bodies
 
-        String bodyRu = Files.readString(
-                Paths.get("body_ru.txt")
-        );
+        String bodyRu = Files.readString(Paths.get("body_ru.txt"));
 
-        String bodyEn = Files.readString(
-                Paths.get("body_en.txt")
-        );
+        String bodyEn = Files.readString(Paths.get("body_en.txt"));
 
-        // =========================
-        // LOAD RECIPIENTS
-        // =========================
+        // Load recipients
 
-        List<String> emails =
-                Files.readAllLines(
-                        Paths.get("emails.txt")
-                );
+        List<String> emails = Files.readAllLines(Paths.get("emails.txt"));
 
-        // =========================
         // SMTP
-        // =========================
 
         Properties props = new Properties();
 
@@ -78,7 +57,6 @@ public class ResumeSender {
                     @Override
                     protected PasswordAuthentication
                     getPasswordAuthentication() {
-
                         return new PasswordAuthentication(
                                 email,
                                 password
@@ -90,9 +68,7 @@ public class ResumeSender {
         int success = 0;
         int failed = 0;
 
-        // =========================
-        // SEND EMAILS
-        // =========================
+        // Send emails
 
         for (String recipient : emails) {
 
@@ -106,24 +82,15 @@ public class ResumeSender {
                     recipient.endsWith(".ru")
                             || recipient.endsWith(".by");
 
-            String subject =
-                    isRussianDomain
-                            ? subjectRu
-                            : subjectEn;
+            String subject = isRussianDomain ? subjectRu : subjectEn;
 
-            String body =
-                    isRussianDomain
-                            ? bodyRu
-                            : bodyEn;
+            String body = isRussianDomain ? bodyRu : bodyEn;
 
             try {
 
-                MimeMessage message =
-                        new MimeMessage(session);
+                MimeMessage message = new MimeMessage(session);
 
-                message.setFrom(
-                        new InternetAddress(email)
-                );
+                message.setFrom(new InternetAddress(email));
 
                 message.setRecipients(
                         Message.RecipientType.TO,
@@ -135,37 +102,29 @@ public class ResumeSender {
                         "UTF-8"
                 );
 
-                // TEXT
-                MimeBodyPart textPart =
-                        new MimeBodyPart();
+                // Text
+                MimeBodyPart textPart = new MimeBodyPart();
 
                 textPart.setText(
                         body,
                         "UTF-8"
                 );
 
-                Multipart multipart =
-                        new MimeMultipart();
+                Multipart multipart = new MimeMultipart();
 
                 multipart.addBodyPart(textPart);
 
-                // RU RESUME
-                MimeBodyPart ruResume =
-                        new MimeBodyPart();
+                // RU resume
+                MimeBodyPart ruResume = new MimeBodyPart();
 
-                ruResume.attachFile(
-                        new File(RU_RESUME)
-                );
+                ruResume.attachFile(new File(RU_RESUME));
 
                 multipart.addBodyPart(ruResume);
 
-                // EN RESUME
-                MimeBodyPart enResume =
-                        new MimeBodyPart();
+                // EN resume
+                MimeBodyPart enResume = new MimeBodyPart();
 
-                enResume.attachFile(
-                        new File(EN_RESUME)
-                );
+                enResume.attachFile(new File(EN_RESUME));
 
                 multipart.addBodyPart(enResume);
 
@@ -175,9 +134,7 @@ public class ResumeSender {
 
                 success++;
 
-                System.out.println(
-                        "[OK] " + recipient
-                );
+                System.out.println("[OK] " + recipient);
 
                 Thread.sleep(3000);
 
