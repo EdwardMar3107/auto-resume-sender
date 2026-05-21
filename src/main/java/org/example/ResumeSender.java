@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ResumeSender {
 
@@ -136,7 +137,10 @@ public class ResumeSender {
 
                 System.out.println("[OK] " + recipient);
 
-                Thread.sleep(3000);
+                int delay = ThreadLocalRandom.current()
+                        .nextInt(5000, 10001);
+
+                Thread.sleep(delay);
 
             } catch (Exception e) {
 
